@@ -1,46 +1,112 @@
 # Copilot instructions — ПроНефть
 
-Purpose
-- Help AI coding assistants be immediately productive in this small static-site repo.
+## Purpose
+Help AI coding assistants be immediately productive in this educational slide-based static website.
 
-Big picture
-- Single-page static HTML: the entire app lives in `Index.htm` (HTML + inline CSS + inline JS).
-- The project is an educational slide-style quest for children (6 slides, ids `slide1`..`slide6`).
-- UI state is driven by three small JS functions in the file: `showSlide()`, `updateProgress()`, `toggleCheck()`.
+## Big picture
+- **Single-page static HTML**: entire app in `index.htm` (757 lines: HTML + inline CSS + inline JS)
+- **Educational slide quest for children**: 6 interactive slides about petroleum/oil for elementary school students
+- **Zero dependencies**: no build system, no package manager, no frameworks, no tests
+- **Russian language content**: all UI text and content in Russian; directory uses Cyrillic (`ПроНефть`)
+- **UI state driven by 3 functions**: `showSlide(n)`, `updateProgress()`, `toggleCheck(element)`
 
-Key files
-- [Index.htm](Index.htm) — single source of truth: layout, styles, scripts, and content.
+## Key files
+- [index.htm](index.htm) — single source of truth (layout, styles, scripts, content)
+- `img/` — local image assets: `children.png`, `map.png`, `oil_tower.png`, `tancker.png`
+- [README.md](README.md) — minimal project description (3 lines)
 
-What an agent should know before editing
-- There is no build system, package manager, or tests. Preview locally by opening `Index.htm` in a browser.
-- Preserve UTF-8 encoding and the Russian text; directory name contains Cyrillic (`ПроНефть`) — avoid renaming paths.
-- CSS and JS are inline. If extracting code to new files, update the `<script>` and `<link>` references and keep behavior identical.
+## Critical architecture patterns
 
-Patterns and conventions (project-specific)
-- Slides are numbered by element id: `slide1` → `slide6`. Progress dots correspond to slide indexes (0-based in JS).
-- Navigation: `showSlide(currentSlide ± 1)` is used by buttons and keyboard handlers. Keep the `totalSlides` constant in sync.
-- Visual state is controlled by adding/removing classes and setting `style.display`. Avoid removing `updateProgress()` calls when changing navigation logic.
-- The interactive checklist uses `.check-item` elements and `toggleCheck(element)` to flip `checked` class and icon text.
+### Slide management
+- 6 slides with sequential IDs: `slide1`, `slide2`, ..., `slide6`
+- JS variable `totalSlides = 6` must match actual slide count
+- Only one slide visible at a time via `display: none`/`block` and `.active` class
+- Navigation bounds enforced: `showSlide(n)` clamps `n` between 0 and `totalSlides - 1`
 
-Editing examples (concrete)
-- To add a slide: append a `.slide` block, give it id `slideN` where N = totalSlides+1, add a corresponding `.progress-dot` and increment `totalSlides` in the script.
-- To change the active-dot logic: modify `updateProgress()` which toggles the `active` class on `.progress-dot` elements.
-- To refactor JS into `main.js`: move the functions, include `<script src="main.js"></script>` before `</body>`, and ensure `main.js` runs after DOM load.
+### Progress indicator
+- Progress dots (`.progress-dot`) match slide count 1:1
+- `updateProgress()` syncs active dot with `currentSlide` (0-indexed)
+- **Critical**: When adding/removing slides, update both HTML dots and `totalSlides` constant
 
-Debugging & preview
-- Local preview: open `Index.htm` in any browser (Chrome/Edge recommended). Use DevTools to inspect `.slide`, `.progress-dot`, and JS console errors.
-- Keyboard navigation: ArrowLeft / ArrowRight are wired — verify event listener remains attached if you refactor scripts.
+### Navigation flows
+- Fixed bottom buttons: circular `.nav-btn` with left/right arrows
+- Keyboard shortcuts: ArrowLeft/ArrowRight call `showSlide(currentSlide ± 1)`
+- "Start quest" button on slide1: `onclick="showSlide(1)"`
+- "Complete quest" button on slide6: `onclick="showSlide(0)"` (returns to start)
 
-Integration & external dependencies
-- No external build or CI is present. Images use external placeholder URLs; if adding local assets, place them next to `Index.htm` and use relative paths.
+### Interactive elements
+- Slide6 checklist: `.check-item` with `onclick="toggleCheck(this)"`
+- Toggle adds/removes `.checked` class and changes icon: `◯` → `✓`
+- Visual feedback: green background (`rgba(40, 167, 69, 0.2)`) when checked
 
-Commit and PR guidance for AI
-- Keep changes small and focused (this is a single-file site). When extracting files, include a short PR description explaining why (performance, maintainability).
-- Preserve existing behavior: screenshots or a short video of the UI before/after are helpful for reviewers.
+## Responsive design breakpoints
+- Mobile (`max-width: 768px`): single-column layouts, static nav buttons
+- Desktop 1K+ (`min-width: 1600px`): larger fonts, max-width 1400px container, bigger images
 
-When to ask the maintainer
-- If you plan to add a build system, routing, or move to a multi-file app, ask about intended hosting and audience first.
-- Ask before renaming `Index.htm` or the repo folder (Cyrillic path may be significant).
+## Developer workflows
 
-Follow-ups
-- Want me to split inline CSS/JS into separate files and add a minimal `README.md` with preview steps? Reply and I'll propose a patch.
+### Preview/testing
+```powershell
+# Open in default browser
+start index.htm
+# Or specific browser
+chrome index.htm
+```
+- No server needed — opens directly from filesystem
+- Test keyboard navigation (Arrow keys) and interactive checklist (slide6)
+
+### Image handling
+- Local images: place in `img/` and reference as `img/filename.png`
+- External placeholders still present: `https://placehold.co/...` (slide1, slide2, slide6)
+- When replacing placeholders, use same dimensions or adjust parent `.illustration` styles
+
+### Character encoding
+- **MUST** save as UTF-8 with BOM or UTF-8 to preserve Russian text and Cyrillic path
+- VS Code default (UTF-8) works; avoid ANSI/Windows-1251
+
+## Common modification patterns
+
+### Adding a slide
+1. Insert new `<div id="slide7" class="slide">...</div>` before `</div><!-- .container -->`
+2. Add `<div class="progress-dot" onclick="showSlide(6)"></div>` in `.progress-bar`
+3. Update JS: change `const totalSlides = 6;` to `= 7;`
+4. Test: verify progress dots update and navigation reaches new slide
+
+### Changing color theme
+- Primary accent: `#ff6b35` (orange) — used in buttons, borders, headings
+- Background gradient: `#1a1a2e` → `#16213e` → `#0f3460` (dark blue tones)
+- Update all instances for consistency (search for hex codes)
+
+### Extracting CSS/JS to separate files
+```html
+<!-- Replace inline <style> with -->
+<link rel="stylesheet" href="styles.css">
+
+<!-- Replace inline <script> with -->
+<script src="main.js"></script>
+```
+- Ensure `main.js` runs after DOM loads (place before `</body>` or use DOMContentLoaded)
+- Keep initialization call: `updateProgress();` at script end
+
+## Constraints & pitfalls
+
+### What NOT to change
+- File name `index.htm` (not `.html`) — likely intentional for legacy compatibility
+- Cyrillic directory name `ПроНефть` — may be significant for hosting/deployment
+- Inline icon characters in HTML (emoji: 🇺🇸, 🇷🇺, 🚗, etc.) — part of design language
+
+### Animation dependencies
+- Slide transitions use `.slideIn` keyframe animation (0.8s fade-in)
+- Triggered by `display: block` change — refactoring display logic may break animations
+- Progress dots use `transform: scale(1.2)` and color transition — preserve `.active` class behavior
+
+### Event handler integrity
+- Keyboard listener attached on DOM ready: `document.addEventListener('keydown', ...)`
+- If refactoring JS to modules, ensure listener re-attaches after slide changes
+- Inline `onclick` attributes used throughout (e.g., `onclick="showSlide(1)"`) — if moving to addEventListener, replace all inline handlers
+
+## When to ask the maintainer
+- Internationalizing content (adding English version) — may need locale routing
+- Replacing slide navigation with URL routing (e.g., `#slide3`) — changes core architecture
+- Adding analytics or external scripts — may conflict with educational/privacy requirements
+- Significant restructuring (multi-file, build pipeline) — validate against deployment constraints

@@ -30,9 +30,9 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 20px 0;
+            padding: 14px 0;
             border-bottom: 3px solid #ff6b35;
-            margin-bottom: 40px;
+            margin-bottom: 24px;
         }
 
         .logo {
@@ -105,8 +105,35 @@
         .slide {
             display: none;
             min-height: 70vh;
-            padding: 40px 20px;
+            padding: 28px 20px 160px;
             animation: slideIn 0.8s ease-out;
+        }
+
+        /* Compact tweaks for tall slides */
+        .tall-slide {
+            padding: 24px 20px 160px;
+        }
+
+        .tall-slide .slide-subtitle {
+            margin-bottom: 18px;
+        }
+
+        .tall-slide .illustration {
+            margin: 18px 0;
+            padding: 12px;
+        }
+
+        .tall-slide .illustration img {
+            max-height: 42vh;
+            object-fit: contain;
+        }
+
+        .tall-slide .countries-list {
+            gap: 12px;
+        }
+
+        .tall-slide .country-item {
+            padding: 10px;
         }
 
         .slide.active {
@@ -197,7 +224,7 @@
         /* Countries List */
         .countries-list {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(4, 1fr);
             gap: 15px;
             margin: 20px 0;
         }
@@ -298,8 +325,9 @@
         /* Footer */
         .footer {
             text-align: center;
-            padding: 20px;
-            margin-top: 40px;
+            padding: 20px 20px 0;
+            margin-top: -80px;
+            margin-bottom: 140px;
             border-top: 2px solid #333;
             font-size: 0.9rem;
             color: #ccc;
@@ -342,7 +370,19 @@
             }
 
             .countries-list {
-                grid-template-columns: 1fr;
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .tall-slide {
+                padding: 20px 16px 140px;
+            }
+
+            .tall-slide .illustration img {
+                max-height: 36vh;
+            }
+
+            .tall-slide .countries-list {
+                gap: 10px;
             }
         }
 
@@ -410,7 +450,7 @@
             }
 
             .countries-list {
-                grid-template-columns: repeat(3, 1fr);
+                grid-template-columns: repeat(5, 1fr);
                 gap: 24px;
             }
 
@@ -443,7 +483,7 @@
 
             .footer {
                 font-size: 1rem;
-                padding: 30px;
+                padding: 30px 30px 140px;
             }
         }
     </style>
@@ -549,7 +589,7 @@
         </div>
 
         <!-- Slide 4: Countries with Reserves -->
-        <div id="slide4" class="slide">
+        <div id="slide4" class="slide tall-slide">
             <h1>10 стран-хранителей нефтяных сокровищ</h1>
             <p class="slide-subtitle">Вот 10 стран, где под землёй спрятано больше всего нефти!</p>
             
@@ -600,11 +640,11 @@
                 </div>
             </div>
 
-            <p style="text-align: center; font-style: italic; margin: 20px 0;">💡 Вместе эти страны хранят почти половину всех нефтяных запасов мира!</p>
+            <p style="text-align: center; font-style: italic; margin: 15px 0 0 0;">💡 Вместе эти страны хранят почти половину всех нефтяных запасов мира!</p>
         </div>
 
         <!-- Slide 5: Countries with Production -->
-        <div id="slide5" class="slide">
+        <div id="slide5" class="slide tall-slide">
             <h1>10 стран-мастеров по добыче нефти</h1>
             <p class="slide-subtitle">Запасы — это сколько спрятано, а добыча — сколько вытащили за год!</p>
             
@@ -655,7 +695,7 @@
                 </div>
             </div>
 
-            <p style="text-align: center; font-style: italic; margin: 20px 0;">🤔 Как ты думаешь, кто добывает больше — Россия или Китай?</p>
+            <p style="text-align: center; font-style: italic; margin: 15px 0 0 0;">🤔 Как ты думаешь, кто добывает больше — Россия или Китай?</p>
         </div>
 
         <!-- Slide 6: Final Challenge -->
@@ -695,11 +735,6 @@
             </div>
 
             <button class="btn" onclick="showSlide(0)">Завершить квест</button>
-        </div>
-
-        <!-- Footer -->
-        <div class="footer">
-            Образовательный квест для детей младшей школы
         </div>
     </div>
 
